@@ -7,21 +7,6 @@ var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Add an alternate basemap layer (e.g., satellite view)
-var satellite = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
-});
-
-// Layers control to switch between basemaps
-var baseLayers = {
-    "Default Map": osm,
-    "Satellite View": satellite
-};
-
-// Add layers control to the map
-L.control.layers(baseLayers).addTo(map);
-
 var geojsonLayer;
 var labelsLayer = L.layerGroup().addTo(map); // Layer to hold the labels, only used during search
 
