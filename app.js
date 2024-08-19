@@ -78,7 +78,61 @@ legend.onAdd = function (map) {
 };
 
 legend.addTo(map);
+// Function to update the map based on the search query
+function updateMap(searchQuery) {
+    labelsLayer.clearLayers(); // Clear existing labels before adding new ones
 
+    geojsonLayer.eachLayer(function (layer) {
+        var feature = layer.feature;
+        var entities = feature.properties && feature.properties.Entities ? feature.properties.Entities : ''; // Ensure 'Entities' exists
+
+        if (entities) {
+            // Split the entities string by commas and trim any extra spaces
+            var companyList = entities.split(',').map(function(company) {
+                return company.trim().toLowerCase();
+            });
+
+            // Check if the search query is in the list of companies
+            if (companyList.includes(searchQuery)) {
+                // Highlight the county in yellow if it contains the company
+                layer.setStyle({
+                    color: 'black',
+                    fillColor: 'yellow',
+                    fillOpacity: 0.7
+                });
+
+                // Add a label to the county
+                var countyName = feature.properties && feature.properties.County ? feature.properties.County : 'Unknown County';
+                var label = L.marker(layer.getBounds().getCenter(), {
+                    icon: L.divIcon({
+                        className: 'label', 
+                        html: <b>${countyName}</b>, // Label showing the county name
+                        iconSize: [100, 40]
+                    })
+                }).addTo(labelsLayer);
+            } else {
+                // Reset the style for counties that don't match the search
+                layer.setStyle(style(feature));
+            }
+        } else {
+            // Reset the style for counties that don't have the 'Entities' property
+            layer.setStyle(style(feature));
+        }
+    });
+}
+
+// Add event listener for the search box
+document.getElementById('search-box').addEventListener('input', function (e) {
+    var searchQuery = e.target.value.trim().toLowerCase();
+    if (searchQuery) {
+        updateMap(searchQuery); // Only update the map if there's a search query
+    } else {
+        labelsLayer.clearLayers(); // Clear labels when search box is empty
+        geojsonLayer.eachLayer(function (layer) {
+            layer.setStyle(style(layer.feature)); // Reset to original style
+        });
+    }
+});
 var companies = [
     "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
     "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
