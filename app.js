@@ -150,7 +150,7 @@ document.getElementById('search-box').addEventListener('input', function (e) {
     }
 });
 // List of companies from the image provided
-var companies = [
+var company = [
     "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
     "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
     "HJFMRI", "Hellen Keller International", "IPAS", "IQVIA", "IRDO", "JHPIEGO", "JTP",
