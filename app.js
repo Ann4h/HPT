@@ -23,7 +23,7 @@ var baseLayers = {
 L.control.layers(baseLayers).addTo(map);
 
 var geojsonLayer;
-var labelsLayer = L.layerGroup().addTo(map); // Layer to hold the labels, only used during search
+var labelsLayer = L.layerGroup().addTo(map); // Layer to hold the labels for all counties
 
 // Function to get color based on the Total value (using shades of blue and white for 0)
 function getColor(d) {
@@ -46,6 +46,29 @@ function style(feature) {
     };
 }
 
+// List of companies from the image provided
+var companies = [
+    "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
+    "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
+    "HJFMRI", "Hellen Keller International", "IPAS", "IQVIA", "IRDO", "JHPIEGO", "JTP",
+    "Jacaranda BMGF", "Jamii Tekelezi CHAK", "LVCT", "Lwala Community", "MSF", "MSH",
+    "Nuru ya Mtoto", "Nutrition International", "PATH", "PS Kenya", "Think Well",
+    "UNFPA", "UNICEF", "USAID Ampath uzima", "USAID DUMISHA AFYA", "USAID Nawiri",
+    "USAID Tujenge Jamii UTJ program", "USP PQM", "Vision Impact", "WHO", "WRP",
+    "Waltered program", "Xetova Microvision", "inSupply"
+];
+
+// Function to populate the dropdown menu
+function populateDropdown() {
+    var select = document.getElementById('company-select');
+    companies.forEach(function(company) {
+        var option = document.createElement('option');
+        option.value = company;
+        option.text = company;
+        select.add(option);
+    });
+}
+
 // Load the GeoJSON data and add it to the map
 fetch('counties.geojson')
     .then(response => response.json())
@@ -53,81 +76,51 @@ fetch('counties.geojson')
         geojsonLayer = L.geoJSON(data, {
             style: style,
             onEachFeature: function (feature, layer) {
+                // Bind a popup to each feature showing the Entities attribute
                 layer.bindPopup(
-                    <strong>County:</strong> ${feature.properties.County}<br>
-                    <strong>Partners:</strong> ${feature.properties.Entities}<br>
-                     <strong>Number of Partners:</strong> ${feature.properties.Total}
+                    `<strong>County:</strong> ${feature.properties.County}<br>
+                     <strong>Total Partners:</strong> ${feature.properties.Total}<br>
+                     <strong>Entities:</strong> ${feature.properties.Entities || 'No data available'}`
                 );
+
+                // Add a plain text label to each county
+                var countyName = feature.properties && feature.properties.County ? feature.properties.County : 'Unknown County';
+                var label = L.divIcon({
+                    className: 'county-label',
+                    html: `<b>${countyName}</b>`,
+                    iconSize: null, // Automatically size the label
+                    iconAnchor: [0, 0] // Position the label correctly
+                });
+                L.marker(layer.getBounds().getCenter(), { icon: label }).addTo(labelsLayer);
             }
         }).addTo(map);
+
+        // Populate the dropdown with company names
+        populateDropdown();
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
 
-// Add a legend to the map
-var legend = L.control({position: 'bottomleft'});
-
-legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'legend'),
-        grades = [0, 1, 3, 6, 9],
-        labels = [];
-
-    div.style.padding = '10px';
-    div.style.fontSize = '14px';
-    div.style.lineHeight = '20px';
-    div.style.width = '180px'; // Increase the width of the legend box
-
-    div.innerHTML = '<h4>HPT Supply Number of Partners</h4>';
-
-    // Add the "No Partners" label specifically
-    div.innerHTML +=
-        '<i style="background:' + getColor(0) + '; width: 24px; height: 24px; display: inline-block; margin-right: 10px; border: 1px solid #000;"></i> No Partners<br>';
-
-    // Loop through the remaining intervals and generate a label with a colored square for each interval
-    for (var i = 1; i < grades.length; i++) {
-        div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '; width: 24px; height: 24px; display: inline-block; margin-right: 10px; border: 1px solid #000;"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '&ndash;12');
-    }
-
-    return div;
-};
-
-legend.addTo(map);
-
-// Function to update the map based on the search query
-function updateMap(searchQuery) {
-    labelsLayer.clearLayers(); // Clear existing labels before adding new ones
-
+// Function to update the map based on the selected company
+function updateMap(selectedCompany) {
     geojsonLayer.eachLayer(function (layer) {
         var feature = layer.feature;
         var entities = feature.properties && feature.properties.Entities ? feature.properties.Entities : ''; // Ensure 'Entities' exists
 
         if (entities) {
-            // Split the entities string by commas and trim any extra spaces
+            // Check if the selected company is in the list of companies for this county
             var companyList = entities.split(',').map(function(company) {
                 return company.trim().toLowerCase();
             });
 
-            // Check if the search query is in the list of companies
-            if (companyList.includes(searchQuery)) {
-                // Highlight the county in yellow if it contains the company
+            // Highlight the county if it contains the selected company
+            if (companyList.includes(selectedCompany.toLowerCase())) {
                 layer.setStyle({
                     color: 'black',
                     fillColor: 'yellow',
                     fillOpacity: 0.7
                 });
-
-                // Add a label to the county
-                var countyName = feature.properties && feature.properties.County ? feature.properties.County : 'Unknown County';
-                var label = L.marker(layer.getBounds().getCenter(), {
-                    icon: L.divIcon({
-                        className: 'label', 
-                        html: <b>${countyName}</b>, // Label showing the county name
-                        iconSize: [100, 40]
-                    })
-                }).addTo(labelsLayer);
             } else {
-                // Reset the style for counties that don't match the search
+                // Reset the style for counties that don't match the selected company
                 layer.setStyle(style(feature));
             }
         } else {
@@ -137,31 +130,14 @@ function updateMap(searchQuery) {
     });
 }
 
-// Add event listener for the search box
-document.getElementById('search-box').addEventListener('input', function (e) {
-    var searchQuery = e.target.value.trim().toLowerCase();
-    if (searchQuery) {
-        updateMap(searchQuery); // Only update the map if there's a search query
+// Add event listener for the dropdown menu
+document.getElementById('company-select').addEventListener('change', function (e) {
+    var selectedCompany = e.target.value;
+    if (selectedCompany) {
+        updateMap(selectedCompany); // Update the map based on the selected company
     } else {
-        labelsLayer.clearLayers(); // Clear labels when search box is empty
         geojsonLayer.eachLayer(function (layer) {
             layer.setStyle(style(layer.feature)); // Reset to original style
         });
     }
 });
-
-// Populate the dropdown menu with companies
-function populateDropdown() {
-    var select = document.getElementById('companies-select');
-    companies.forEach(function(companies) {
-        var option = document.createElement('option');
-        option.value = companies.toLowerCase(); // Use lowercase to match the search logic
-        option.text = companies;
-        select.add(option);
-    });
-}
-
-// Call the populateDropdown function to populate the dropdown
-populateDropdown();
-
-
