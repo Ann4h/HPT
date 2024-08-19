@@ -54,9 +54,8 @@ fetch('counties.geojson')
             style: style,
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(
-                    <strong>County:</strong> ${feature.properties.County}<br>
-                    <strong>Partners:</strong> ${feature.properties.Entities}<br>
-                     <strong>Number of Partners:</strong> ${feature.properties.Total}
+                    `<strong>County:</strong> ${feature.properties.County}<br>
+                     <strong>Total Partners:</strong> ${feature.properties.Total}`
                 );
             }
         }).addTo(map);
@@ -122,7 +121,7 @@ function updateMap(searchQuery) {
                 var label = L.marker(layer.getBounds().getCenter(), {
                     icon: L.divIcon({
                         className: 'label', 
-                        html: <b>${countyName}</b>, // Label showing the county name
+                        html: `<b>${countyName}</b>`, // Label showing the county name
                         iconSize: [100, 40]
                     })
                 }).addTo(labelsLayer);
