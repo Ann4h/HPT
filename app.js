@@ -164,15 +164,4 @@ function populateDropdown() {
 // Call the populateDropdown function to populate the dropdown
 populateDropdown();
 
-// Add event listener for the dropdown menu
-document.getElementById('company-select').addEventListener('change', function () {
-    var selectedCompany = this.value;
-    if (selectedCompany) {
-        updateMap(selectedCompany);
-    } else {
-        labelsLayer.clearLayers(); // Clear labels when no company is selected
-        geojsonLayer.eachLayer(function (layer) {
-            layer.setStyle(style(layer.feature)); // Reset to original style
-        });
-    }
-});
+
