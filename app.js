@@ -54,9 +54,9 @@ fetch('counties.geojson')
             style: style,
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(
-                    <strong>County:</strong> ${feature.properties.County}<br>
+                    `<strong>County:</strong> ${feature.properties.County}<br>
                     <strong>Partners:</strong> ${feature.properties.Entities}<br>
-                     <strong>Number of Partners:</strong> ${feature.properties.Total}
+                     <strong>Number of Partners:</strong> ${feature.properties.Total}`
                 );
             }
         }).addTo(map);
@@ -94,7 +94,30 @@ legend.onAdd = function (map) {
 
 legend.addTo(map);
 
-// Function to update the map based on the search query
+// List of companies
+var companies = [
+    "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
+    "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
+    "HJFMRI", "Hellen Keller International", "IPAS", "IQVIA", "IRDO", "JHPIEGO", "JTP",
+    "Jacaranda BMGF", "Jamii Tekelezi CHAK", "LVCT", "Lwala Community", "MSF", "MSH",
+    "Nuru ya Mtoto", "Nutrition International", "PATH", "PS Kenya", "Think Well",
+    "UNFPA", "UNICEF", "USAID Ampath uzima", "USAID DUMISHA AFYA", "USAID Nawiri",
+    "USAID Tujenge Jamii UTJ program", "USP PQM", "Vision Impact", "WHO", "WRP",
+    "Waltered program", "Xetova Microvision", "inSupply"
+];
+
+// Function to populate the dropdown menu
+function populateDropdown() {
+    var select = document.getElementById('company-select');
+    companies.forEach(function(company) {
+        var option = document.createElement('option');
+        option.value = company.toLowerCase(); // Use lowercase to match the search logic
+        option.text = company;
+        select.add(option);
+    });
+}
+
+// Function to update the map based on the search query or selected company
 function updateMap(searchQuery) {
     labelsLayer.clearLayers(); // Clear existing labels before adding new ones
 
@@ -122,7 +145,7 @@ function updateMap(searchQuery) {
                 var label = L.marker(layer.getBounds().getCenter(), {
                     icon: L.divIcon({
                         className: 'label', 
-                        html: <b>${countyName}</b>, // Label showing the county name
+                        html: `<b>${countyName}</b>`, // Label showing the county name
                         iconSize: [100, 40]
                     })
                 }).addTo(labelsLayer);
@@ -137,7 +160,7 @@ function updateMap(searchQuery) {
     });
 }
 
-// Add event listener for the search box
+// Event listener for the search box
 document.getElementById('search-box').addEventListener('input', function (e) {
     var searchQuery = e.target.value.trim().toLowerCase();
     if (searchQuery) {
@@ -149,37 +172,12 @@ document.getElementById('search-box').addEventListener('input', function (e) {
         });
     }
 });
-// List of companies from the image provided
-var companies = [
-    "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
-    "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
-    "HJFMRI", "Hellen Keller International", "IPAS", "IQVIA", "IRDO", "JHPIEGO", "JTP",
-    "Jacaranda BMGF", "Jamii Tekelezi CHAK", "LVCT", "Lwala Community", "MSF", "MSH",
-    "Nuru ya Mtoto", "Nutrition International", "PATH", "PS Kenya", "Think Well",
-    "UNFPA", "UNICEF", "USAID Ampath uzima", "USAID DUMISHA AFYA", "USAID Nawiri",
-    "USAID Tujenge Jamii UTJ program", "USP PQM", "Vision Impact", "WHO", "WRP",
-    "Waltered program", "Xetova Microvision", "inSupply"
-];
 
-// Populate the dropdown menu with companies
-function populateDropdown() {
-    var select = document.getElementById('companies-select');
-    companies.forEach(function(companies) {
-        var option = document.createElement('option');
-        option.value = companies.toLowerCase(); // Use lowercase to match the search logic
-        option.text = companies;
-        select.add(option);
-    });
-}
-
-// Call the populateDropdown function to populate the dropdown
-populateDropdown();
-
-// Add event listener for the dropdown menu
+// Event listener for the dropdown menu
 document.getElementById('company-select').addEventListener('change', function () {
     var selectedCompany = this.value;
     if (selectedCompany) {
-        updateMap(selectedCompany);
+        updateMap(selectedCompany); // Update the map based on the selected company
     } else {
         labelsLayer.clearLayers(); // Clear labels when no company is selected
         geojsonLayer.eachLayer(function (layer) {
@@ -187,3 +185,6 @@ document.getElementById('company-select').addEventListener('change', function ()
         });
     }
 });
+
+// Populate the dropdown menu on page load
+populateDropdown();
