@@ -55,7 +55,7 @@ fetch('counties.geojson')
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(
                     `<strong>Partners:</strong> ${feature.properties.Entities}<br>
-                     <strong>Total Partners:</strong> ${feature.properties.Total}`
+                     <strong>Number of Partners:</strong> ${feature.properties.Total}`
                 );
             }
         }).addTo(map);
