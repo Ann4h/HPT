@@ -149,24 +149,14 @@ document.getElementById('search-box').addEventListener('input', function (e) {
         });
     }
 });
-// List of companies from the image provided
-var company = [
-    "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
-    "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
-    "HJFMRI", "Hellen Keller International", "IPAS", "IQVIA", "IRDO", "JHPIEGO", "JTP",
-    "Jacaranda BMGF", "Jamii Tekelezi CHAK", "LVCT", "Lwala Community", "MSF", "MSH",
-    "Nuru ya Mtoto", "Nutrition International", "PATH", "PS Kenya", "Think Well",
-    "UNFPA", "UNICEF", "USAID Ampath uzima", "USAID DUMISHA AFYA", "USAID Nawiri",
-    "USAID Tujenge Jamii UTJ program", "USP PQM", "Vision Impact", "WHO", "WRP",
-    "Waltered program", "Xetova Microvision", "inSupply"
-];
+
 // Populate the dropdown menu with companies
 function populateDropdown() {
-    var select = document.getElementById('company-select');
-    companies.forEach(function(company) {
+    var select = document.getElementById('companies-select');
+    companies.forEach(function(companies) {
         var option = document.createElement('option');
-        option.value = company.toLowerCase(); // Use lowercase to match the search logic
-        option.text = company;
+        option.value = companies.toLowerCase(); // Use lowercase to match the search logic
+        option.text = companies;
         select.add(option);
     });
 }
