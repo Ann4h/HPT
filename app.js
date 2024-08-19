@@ -163,11 +163,11 @@ var companies = [
 
 // Populate the dropdown menu with companies
 function populateDropdown() {
-    var select = document.getElementById('company-select');
-    companies.forEach(function(company) {
+    var select = document.getElementById('companies-select');
+    companies.forEach(function(companies) {
         var option = document.createElement('option');
-        option.value = company.toLowerCase(); // Use lowercase to match the search logic
-        option.text = company;
+        option.value = companies.toLowerCase(); // Use lowercase to match the search logic
+        option.text = companies;
         select.add(option);
     });
 }
