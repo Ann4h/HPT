@@ -76,7 +76,7 @@ legend.onAdd = function (map) {
     div.style.lineHeight = '20px';
     div.style.width = '180px'; // Increase the width of the legend box
 
-    div.innerHTML = '<h4>HPT Supply Number of Partners</h4>';
+    div.innerHTML = '<h4>Number of HPT Partners</h4>';
 
     // Add the "No Partners" label specifically
     div.innerHTML +=
@@ -149,16 +149,6 @@ document.getElementById('search-box').addEventListener('input', function (e) {
         });
     }
 });
-// Populate the dropdown menu with companies
-function populateDropdown() {
-    var select = document.getElementById('company-select');
-    companies.forEach(function(company) {
-        var option = document.createElement('option');
-        option.value = company.toLowerCase(); // Use lowercase to match the search logic
-        option.text = company;
-        select.add(option);
-    });
-}
 var companies = [
     "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
     "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
@@ -169,6 +159,17 @@ var companies = [
     "USAID Tujenge Jamii UTJ program", "USP PQM", "Vision Impact", "WHO", "WRP",
     "Waltered program", "Xetova Microvision", "inSupply"
 ];
+// Populate the dropdown menu with companies
+function populateDropdown() {
+    var select = document.getElementById('companies-select');
+    companies.forEach(function(companies) {
+        var option = document.createElement('option');
+        option.value = companies.toLowerCase(); // Use lowercase to match the search logic
+        option.text = companies;
+        select.add(option);
+    });
+}
+
 
 // Call the populateDropdown function to populate the dropdown
 populateDropdown();
