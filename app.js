@@ -54,9 +54,9 @@ fetch('counties.geojson')
             style: style,
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(
-                    `<strong>County:</strong> ${feature.properties.County}<br>
+                    <strong>County:</strong> ${feature.properties.County}<br>
                     <strong>Partners:</strong> ${feature.properties.Entities}<br>
-                     <strong>Number of Partners:</strong> ${feature.properties.Total}`
+                     <strong>Number of Partners:</strong> ${feature.properties.Total}
                 );
             }
         }).addTo(map);
@@ -122,7 +122,7 @@ function updateMap(searchQuery) {
                 var label = L.marker(layer.getBounds().getCenter(), {
                     icon: L.divIcon({
                         className: 'label', 
-                        html: `<b>${countyName}</b>`, // Label showing the county name
+                        html: <b>${countyName}</b>, // Label showing the county name
                         iconSize: [100, 40]
                     })
                 }).addTo(labelsLayer);
@@ -144,6 +144,44 @@ document.getElementById('search-box').addEventListener('input', function (e) {
         updateMap(searchQuery); // Only update the map if there's a search query
     } else {
         labelsLayer.clearLayers(); // Clear labels when search box is empty
+        geojsonLayer.eachLayer(function (layer) {
+            layer.setStyle(style(layer.feature)); // Reset to original style
+        });
+    }
+});
+// List of companies from the image provided
+var companies = [
+    "AMREF", "Africa Resoure Centre", "Afya Ugavi", "Afya Uwazi", "Boresha Jamii USAID",
+    "CHAI", "CIHEB", "CIPS", "CMMB", "FIND", "Fahari ya Jamii", "Fred Hollows",
+    "HJFMRI", "Hellen Keller International", "IPAS", "IQVIA", "IRDO", "JHPIEGO", "JTP",
+    "Jacaranda BMGF", "Jamii Tekelezi CHAK", "LVCT", "Lwala Community", "MSF", "MSH",
+    "Nuru ya Mtoto", "Nutrition International", "PATH", "PS Kenya", "Think Well",
+    "UNFPA", "UNICEF", "USAID Ampath uzima", "USAID DUMISHA AFYA", "USAID Nawiri",
+    "USAID Tujenge Jamii UTJ program", "USP PQM", "Vision Impact", "WHO", "WRP",
+    "Waltered program", "Xetova Microvision", "inSupply"
+];
+
+// Populate the dropdown menu with companies
+function populateDropdown() {
+    var select = document.getElementById('company-select');
+    companies.forEach(function(company) {
+        var option = document.createElement('option');
+        option.value = company.toLowerCase(); // Use lowercase to match the search logic
+        option.text = company;
+        select.add(option);
+    });
+}
+
+// Call the populateDropdown function to populate the dropdown
+populateDropdown();
+
+// Add event listener for the dropdown menu
+document.getElementById('company-select').addEventListener('change', function () {
+    var selectedCompany = this.value;
+    if (selectedCompany) {
+        updateMap(selectedCompany);
+    } else {
+        labelsLayer.clearLayers(); // Clear labels when no company is selected
         geojsonLayer.eachLayer(function (layer) {
             layer.setStyle(style(layer.feature)); // Reset to original style
         });
