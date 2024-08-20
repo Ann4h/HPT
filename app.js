@@ -83,17 +83,7 @@ fetch('counties.geojson')
                      <strong>Entities:</strong> ${feature.properties.Entities || 'No data available'}`
                 );
 
-                // Add a plain text label to each county
-                var countyName = feature.properties && feature.properties.County ? feature.properties.County : 'Unknown County';
-                var label = L.divIcon({
-                    className: 'county-label',
-                    html: `<b>${countyName}</b>`,
-                    iconSize: null, // Automatically size the label
-                    iconAnchor: [0, 0] // Position the label correctly
-                });
-                L.marker(layer.getBounds().getCenter(), { icon: label }).addTo(labelsLayer);
-            }
-        }).addTo(map);
+               
 
         // Populate the dropdown with company names
         populateDropdown();
