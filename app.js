@@ -80,7 +80,7 @@ fetch('counties.geojson')
                 layer.bindPopup(
                     `<strong>County:</strong> ${feature.properties.County}<br>
                      <strong>Total Partners:</strong> ${feature.properties.Total}<br>
-                     <strong>Entities:</strong> ${feature.properties.Entities || 'No data available'}`
+                     <strong>Partners:</strong> ${feature.properties.Entities || 'No data available'}`
                 );
 
                
