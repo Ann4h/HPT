@@ -129,7 +129,36 @@ function updateMap(selectedCompany) {
         }
     });
 }
+// Add a legend to the map
+var legend = L.control({position: 'bottomleft'});
 
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'legend'),
+        grades = [0, 1, 3, 6, 9],
+        labels = [];
+
+    div.style.padding = '10px';
+    div.style.fontSize = '14px';
+    div.style.lineHeight = '20px';
+    div.style.width = '180px'; // Increase the width of the legend box
+
+    div.innerHTML = '<h4>HPT Supply Number of Partners</h4>';
+
+    // Add the "No Partners" label specifically
+    div.innerHTML +=
+        '<i style="background:' + getColor(0) + '; width: 24px; height: 24px; display: inline-block; margin-right: 10px; border: 1px solid #000;"></i> No Partners<br>';
+
+    // Loop through the remaining intervals and generate a label with a colored square for each interval
+    for (var i = 1; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i] + 1) + '; width: 24px; height: 24px; display: inline-block; margin-right: 10px; border: 1px solid #000;"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '&ndash;12');
+    }
+
+    return div;
+};
+
+legend.addTo(map);
 // Add event listener for the dropdown menu
 document.getElementById('company-select').addEventListener('change', function (e) {
     var selectedCompany = e.target.value;
